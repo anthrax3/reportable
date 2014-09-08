@@ -98,7 +98,7 @@ module Saulabs
             elsif reporting_period.last_date_time.past?
               value = find_value(new_data, reporting_period)
               if options[:cacheable]
-                new_cached = build_cached_data(report, options[:grouping], options[:conditions], reporting_period, value))
+                new_cached = build_cached_data(report, options[:grouping], options[:conditions], reporting_period, value)
                 new_cached.save!
               end
               result << [reporting_period.date_time, value]
