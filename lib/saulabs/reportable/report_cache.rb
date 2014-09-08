@@ -96,9 +96,12 @@ module Saulabs
             if options[:cacheable] and cached = cached_data.find { |cached| reporting_period == cached[0] }
               result << [cached[0].date_time, cached[1]]
             elsif reporting_period.last_date_time.past?
-              new_cached = build_cached_data(report, options[:grouping], options[:conditions], reporting_period, find_value(new_data, reporting_period))
-              new_cached.save!
-              result << [reporting_period.date_time, new_cached.value]
+              value = find_value(new_data, reporting_period)
+              if options[:cacheable]
+                new_cached = build_cached_data(report, options[:grouping], options[:conditions], reporting_period, value))
+                new_cached.save!
+              end
+              result << [reporting_period.date_time, value]
             else
               result << [reporting_period.date_time, find_value(new_data, reporting_period)]
             end
@@ -138,6 +141,7 @@ module Saulabs
         end
 
         def self.read_cached_data(report, options)
+          return [] if not options[:cacheable]
           conditions = build_conditions_for_reading_cached_data(report, options)
           conditions.limit(options[:limit]).order('reporting_period ASC')
         end
